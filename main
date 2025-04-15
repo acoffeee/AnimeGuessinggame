@@ -1,1 +1,29 @@
-said thing ll,ao 
+import requests
+def start_game(Username):
+    Url = "https://graphql.anilist.co"
+    query = '''
+    query($userName: String){
+        MediaListCollection(userName: $userName, type: ANIME,status: COMPLETED ){
+        lists{
+        entries{
+        media{
+        title{
+        english
+        }
+        tags{
+        name
+        rank
+        }
+        }
+        }
+        }
+        }
+    }
+        '''
+    variables = {"userName": "coffeee"}
+    thingy = requests.post(Url, json ={"query": query, 'variables': variables})
+    blah = thingy.json()['data']
+    return blah
+Username = "Coffeee"
+thing = start_game(Username)
+print(thing)

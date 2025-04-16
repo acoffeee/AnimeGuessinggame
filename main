@@ -1,4 +1,5 @@
 import requests
+import random
 def grab_list(Username):
     Url = "https://graphql.anilist.co"
     query = '''
@@ -59,11 +60,25 @@ upper_echoleon = upper_echoleon / 10
 lower_echoleon = lower_echoleon / 10
 lower_echoleon = round(lower_echoleon, 1)
 upper_echoleon = round(upper_echoleon, 1)
-
-
+n = 0
+def based_anime_count():
+    if avgscore['count'] >= 200:
+        a = 37
+        b = 73
+        c = 100
+        return a, b, c
+    else:
+        a = avgscore['count'] * 0.33
+        a = round(a, 0)
+        b = avgscore['count'] * 0.66
+        b = round(b, 0)
+        c = avgscore['count']
+        return a, b, c
+easy, mid, hard = based_anime_count()
 def easy_difficulty(): 
+    n = 0
     for i in thing:
-        if n<= 37:
+        if n<= easy:
             animepool.append(i)
             n+=1
             continue
@@ -72,8 +87,9 @@ def easy_difficulty():
         else:
             break
 def mid_difficulty(): 
+    n = 0
     for i in thing:
-        if n<= 63:
+        if n<= mid:
             animepool.append(i)
             n+=1
             continue
@@ -82,8 +98,9 @@ def mid_difficulty():
         elif i['score'] <= lower_echoleon:
             break
 def hard_difficulty(): 
+    n = 0
     for i in thing:
-        if n<= 100:
+        if n<= hard:
             animepool.append(i)
             n+=1
             continue
@@ -91,6 +108,19 @@ def hard_difficulty():
             animepool.append(i)
 def game_difficulty():
     try:
-        thing = str(input("What difficulty do you want? theres easy, medium, hard, and extreme"))
+        thing2 = str(input("What difficulty do you want? theres easy, medium, hard, and extreme: \n")).lower()
+        if thing2 == "easy":
+            easy_difficulty()
+        elif thing2 == "medium":
+            mid_difficulty()
+        elif thing2 == "hard":
+            hard_difficulty()
     except:
-        print("bruh thats not a difficulty")
+        print("bruh thats not a difficulty or not in yet")
+#bruh that was only the logic to decide what animes would be condier? bruhh
+def oknowtheactualguesspartihavennocludewtfimdoingimissai():
+    Bwomp = len(animepool)
+    BWOMPBWOMP=random.randrange(0, Bwomp)
+    print(animepool['entries'])
+game_difficulty()
+oknowtheactualguesspartihavennocludewtfimdoingimissai()

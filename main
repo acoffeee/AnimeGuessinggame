@@ -1,29 +1,96 @@
 import requests
-def start_game(Username):
+def grab_list(Username):
     Url = "https://graphql.anilist.co"
     query = '''
     query($userName: String){
-        MediaListCollection(userName: $userName, type: ANIME,status: COMPLETED ){
-        lists{
-        entries{
-        media{
-        title{
-        english
-        }
-        tags{
-        name
-        rank
-        }
-        }
-        }
-        }
+        MediaListCollection(userName: $userName, type: ANIME,status: COMPLETED, sort: FINISHED_ON ){
+            user{
+                statistics{
+                    anime{
+                    count
+                    meanScore
+                    standardDeviation
+                    }
+                }
+            }
+            lists{
+                entries{
+                    score
+                    media{
+                        title{
+                            english
+                        }
+                        tags{
+                        name
+                        rank
+                        }
+                    }
+                }
+            }
         }
     }
         '''
     variables = {"userName": "coffeee"}
     thingy = requests.post(Url, json ={"query": query, 'variables': variables})
-    blah = thingy.json()['data']
-    return blah
+    blah = thingy.json()['data']['MediaListCollection']['lists']
+    print(blah)
+    scoretobasedifficultyon = thingy.json()['data']['MediaListCollection']['user']['statistics']['anime']
+    print(scoretobasedifficultyon)
+    return blah, scoretobasedifficultyon
 Username = "Coffeee"
-thing = start_game(Username)
-print(thing)
+thing, avgscore = grab_list(Username)
+running = False
+#avgscore is purely the users average socore + count
+def start_game():
+    try:
+        thingymabobber = str(input)
+        if "ye" or "start" in thingymabobber:
+            running = True
+        elif "no" or "stop" in thingymabobber:
+            x = str(input("ok tbh you dont really have a choice and like this script isnt gonna get more games so see ya i guess maybe ill add a save option"))
+            running = False
+    except:
+        print("make sure to include something like yes or no lol start and stop also work and maybe stuff that starts with ye")
+animepool = []
+n=0
+upper_echoleon = avgscore['meanScore'] + avgscore['standardDeviation']
+lower_echoleon = avgscore['meanScore'] - avgscore['standardDeviation']
+upper_echoleon = upper_echoleon / 10
+lower_echoleon = lower_echoleon / 10
+lower_echoleon = round(lower_echoleon, 1)
+upper_echoleon = round(upper_echoleon, 1)
+
+
+def easy_difficulty(): 
+    for i in thing:
+        if n<= 37:
+            animepool.append(i)
+            n+=1
+            continue
+        if i['score'] >= upper_echoleon:
+            animepool.append(i)
+        else:
+            break
+def mid_difficulty(): 
+    for i in thing:
+        if n<= 63:
+            animepool.append(i)
+            n+=1
+            continue
+        if i['score'] <= upper_echoleon and i['score'] >= lower_echoleon:
+            animepool.append(i)
+        elif i['score'] <= lower_echoleon:
+            break
+def hard_difficulty(): 
+    for i in thing:
+        if n<= 100:
+            animepool.append(i)
+            n+=1
+            continue
+        if i['score'] <= upper_echoleon:
+            animepool.append(i)
+def game_difficulty():
+    try:
+        thing = str(input("What difficulty do you want? theres easy, medium, hard, and extreme"))
+    except:
+        print("bruh thats not a difficulty")

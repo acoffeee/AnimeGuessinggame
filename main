@@ -1,4 +1,5 @@
 import requests
+import random
 def grab_list(Username):
     Url = "https://graphql.anilist.co"
     query = '''
@@ -33,9 +34,9 @@ def grab_list(Username):
     variables = {"userName": "coffeee"}
     thingy = requests.post(Url, json ={"query": query, 'variables': variables})
     blah = thingy.json()['data']['MediaListCollection']['lists']
-    print(blah)
+    #print(blah)
     scoretobasedifficultyon = thingy.json()['data']['MediaListCollection']['user']['statistics']['anime']
-    print(scoretobasedifficultyon)
+    #print(scoretobasedifficultyon)
     return blah, scoretobasedifficultyon
 Username = "Coffeee"
 thing, avgscore = grab_list(Username)
@@ -59,11 +60,27 @@ upper_echoleon = upper_echoleon / 10
 lower_echoleon = lower_echoleon / 10
 lower_echoleon = round(lower_echoleon, 1)
 upper_echoleon = round(upper_echoleon, 1)
-
-
-def easy_difficulty(): 
+n = 0
+def based_anime_count(avgscore):
+    if avgscore['count'] <= 200:
+        a = 37
+        b = 73
+        c = 100
+        return a, b, c
+    else:
+        a = avgscore['count'] * 0.33
+        a = round(a, 0)
+        b = avgscore['count'] * 0.66
+        b = round(b, 0)
+        c = avgscore['count']
+        return a, b, c
+easy, mid, hard = based_anime_count(avgscore)
+print(easy)
+def easy_difficulty(easy, upper_echoleon, thing): 
+    animepool = []
+    n = 0
     for i in thing:
-        if n<= 37:
+        if n<= easy:
             animepool.append(i)
             n+=1
             continue
@@ -71,9 +88,12 @@ def easy_difficulty():
             animepool.append(i)
         else:
             break
-def mid_difficulty(): 
+    return animepool
+def mid_difficulty(mid, upper_echoleon, lower_echoleon, thing): 
+    animepool = []
+    n = 0
     for i in thing:
-        if n<= 63:
+        if n<= mid:
             animepool.append(i)
             n+=1
             continue
@@ -81,16 +101,33 @@ def mid_difficulty():
             animepool.append(i)
         elif i['score'] <= lower_echoleon:
             break
-def hard_difficulty(): 
+    return animepool
+def hard_difficulty(hard, upper_echoleon, thing): 
+    animepool = []
+    n = 0
     for i in thing:
-        if n<= 100:
+        if n<= hard:
             animepool.append(i)
             n+=1
             continue
         if i['score'] <= upper_echoleon:
             animepool.append(i)
+    return animepool
 def game_difficulty():
     try:
-        thing = str(input("What difficulty do you want? theres easy, medium, hard, and extreme"))
+        thing2 = str(input("What difficulty do you want? theres easy, medium, hard, and extreme: \n")).lower()
+        if thing2 == "easy":
+            animepool = easy_difficulty(easy, upper_echoleon, thing)
+        elif thing2 == "medium":
+            animepool = mid_difficulty(mid, upper_echoleon, lower_echoleon, thing)
+        elif thing2 == "hard":
+            animepool = hard_difficulty(hard, upper_echoleon, thing)
+        return animepool
     except:
-        print("bruh thats not a difficulty")
+        print("bruh thats not a difficulty or not in yet")
+#bruh that was only the logic to decide what animes would be condier? bruhh
+def oknowtheactualguesspartihavennocludewtfimdoingimissai(animepool):
+    Bwomp = len(animepool)
+    print(animepool[0])
+animepool = game_difficulty()
+oknowtheactualguesspartihavennocludewtfimdoingimissai(animepool)

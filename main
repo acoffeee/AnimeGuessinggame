@@ -127,7 +127,12 @@ def game_difficulty():
         print("bruh thats not a difficulty or not in yet")
 #bruh that was only the logic to decide what animes would be condier? bruhh
 def oknowtheactualguesspartihavennocludewtfimdoingimissai(animepool):
-    Bwomp = len(animepool)
-    print(animepool[0])
+    main_animepool = animepool[0]
+    main_animepool = main_animepool['entries']
+    for i in main_animepool:
+        print(i)
+        print("burrrrr")
+    print("this is that certain item")
+    print(main_animepool[341])
 animepool = game_difficulty()
 oknowtheactualguesspartihavennocludewtfimdoingimissai(animepool)

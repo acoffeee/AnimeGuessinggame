@@ -75,7 +75,6 @@ def based_anime_count(avgscore):
         c = avgscore['count']
         return a, b, c
 easy, mid, hard = based_anime_count(avgscore)
-print(easy)
 def easy_difficulty(easy, upper_echoleon, thing): 
     animepool = []
     n = 0
@@ -122,17 +121,103 @@ def game_difficulty():
             animepool = mid_difficulty(mid, upper_echoleon, lower_echoleon, thing)
         elif thing2 == "hard":
             animepool = hard_difficulty(hard, upper_echoleon, thing)
-        return animepool
+        return animepool, thing2
     except:
         print("bruh thats not a difficulty or not in yet")
 #bruh that was only the logic to decide what animes would be condier? bruhh
-def oknowtheactualguesspartihavennocludewtfimdoingimissai(animepool):
+def getsananimetoguess(animepool, difficulty):
     main_animepool = animepool[0]
     main_animepool = main_animepool['entries']
-    for i in main_animepool:
-        print(i)
-        print("burrrrr")
-    print("this is that certain item")
-    print(main_animepool[341])
-animepool = game_difficulty()
-oknowtheactualguesspartihavennocludewtfimdoingimissai(animepool)
+    number = len(main_animepool)
+    ranges = random.randint(0,number)
+    random_anime, tags =main_animepool[ranges], main_animepool[ranges]['media']['tags']
+    tagpool = []
+    if difficulty =="easy":
+        x= 80
+        amountoftags = 5
+    if difficulty == "medium":
+        x = 60
+        amountoftags = 4
+    if difficulty == "hard":
+        x = 70
+        amountoftags = 3
+        for i in tags:
+            if i['rank'] >= x:
+                continue
+            else:
+                tagpool.append(i)
+    if difficulty == "easy" or "medium": 
+        for i in tags:
+            tagpool.append(i)
+            if i['rank']<= x:
+                break
+    return random_anime, tagpool
+    
+
+    
+        
+        
+
+animepool, difficulty = game_difficulty()
+RA, TP = getsananimetoguess(animepool, difficulty)
+def actualgamenow(random_anime, tagpool):
+    x = len(tagpool)
+    tagsto_guess = []
+    while len(tagsto_guess) <= 4:
+        p = random.randint(0,x - 1)
+        if tagpool[p] in tagsto_guess:
+            continue
+        tagsto_guess.append(tagpool[p])
+
+    print('ok here are your tags that you can guess hehe lmao ')
+    for i in tagsto_guess:
+        print(i['name'])
+    def whaddeywant():
+        user_guessed = False
+        while user_guessed == False:
+            choice = str(input("just guess to guess, type hint to also reveal their ranks (reduced points)")).lower()
+            
+            class checkanswer:
+                #this sets the variables
+                def __init__(self, response, correct_answer):
+                    self.response = response
+                    self.correct_answer = correct_answer
+                    
+                    def check_answer():
+                        if self.response == self.correct_answer:
+                            choice = str(input("wow you got it right, what will you do now? type again to play again or type menu to go to the menu "))
+                            if choice == "menu":
+                                game_difficulty()
+                                #for now...
+                            elif choice == "again":
+                                game_difficulty()
+                                #for now...
+                        elif response == "hint":
+                            for i in tagpool:
+                                print(i)
+                            whaddeywant()
+                            #loop yet again that i havent coded RAAHHHHHHH
+                        elif len(response) == len(correct_answer) +2 or len(correct_answer) -2:
+                             print("so close! your 2 characters over or under!")
+                             whaddeywant()
+                             #maybe guess again? still gotta figure out loops lol
+                        else:
+                            choice = str(input("not it, try again or stop? (again or stop)"))
+                            if choice == "again":
+                                whaddeywant()
+                            elif choice == "stop":
+                                game_difficulty()
+                                #for now
+                            whaddeywant()
+                            #again, reinitiate the loop
+                    self.check = check_answer()
+            response = choice
+            correct_answer = random_anime['media']['title']
+            thestatement = checkanswer(response, correct_answer)
+            thestatement.check()
+    whaddeywant()
+            
+
+#wait ok so it first pulls your first _ anime (by date) then after it meets the echolon, it goes by difficulty.
+actualgamenow(RA, TP)
+    

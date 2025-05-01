@@ -1,223 +1,210 @@
 import requests
 import random
-def grab_list(Username):
-    Url = "https://graphql.anilist.co"
-    query = '''
-    query($userName: String){
-        MediaListCollection(userName: $userName, type: ANIME,status: COMPLETED, sort: FINISHED_ON ){
-            user{
-                statistics{
-                    anime{
-                    count
-                    meanScore
-                    standardDeviation
+import os
+import json
+
+class user:
+    def __init__(self):
+        def load():
+            try:
+                file = 'users.json'
+                with open(file, 'r') as f:
+                    global people
+                    bwah = json.load(f)
+                    amount = len(bwah['users'])
+                    people = bwah['users']
+                    f.close
+                    return f'{amount} users available'
+            except:
+                with open('users.json', 'w') as f:
+                    stuff = {'users':[]}
+                    json.dump(stuff, f, indent=2)
+                    f.close
+                    return "no users"
+        self.load = load() 
+        menu()
+        self.name = name
+        self.t_guesses = t_guesses
+        self.c_guesses = c_guesses
+        self.w_guesses = w_guesses
+        self.list = list
+        self.accuracy = "TBD"
+        self.anistats = anistats
+        self.config= config
+        def update(guesses):
+            correct +=1
+            total_guesses += guesses
+            wrong -= guesses - 1
+            return correct, total_guesses, wrong
+        def pick():
+             try:
+                 n=1
+                 for i in people:
+                     print(f'{n}: {i}')
+                     n+=1
+                 choice=int(input("number of person to choose: "))
+                 thing = str(people[choice - 1])
+                 with open(thing, 'r') as f:
+                     ui = json.load(f)
+                     f.close
+                 name = ui['name']
+                 t_guesses =ui['guesses']['total']
+                 w_guesses = ui['guesses']['wrong']
+                 c_guesses =ui['guesses']['correct']
+                 list = ui['list']
+                 anistats = ui['anistats']
+                 config = ui['config']
+                 name = user(name, list, anistats, config, t_guesses, w_guesses, c_guesses)
+                 global duff
+                 duff = str(name)
+                 return duff, menu()
+             except:
+                 print("not a dude bruhh")
+        def new():
+             name = str(input("name: "))
+             name= name
+             list = str(input("anilist user: "))
+             list, anistats = grab_list(list)
+             config = {
+                         "tags": True,
+                     "studio": False,
+                     "director": False,
+                     "genre": True,
+                     "format": True,
+                     "season": False,
+                     "year": True,
+                     "episode": True,
+                     "rating": False,
+                    }
+             file = 'users.json'
+             with open(file, 'r') as r:
+                 stuff = json.load(r)
+                 inlist = stuff['users']
+                 r.close
+             inlist.append(name)
+             print(inlist)
+             with open(file, 'w') as f:
+                 stuff = {"users": inlist}
+                 json.dump(stuff, f)
+                 f.close
+             with open(name, 'w') as f:
+                 stuff = {
+                         "name": name,
+                     "guesses": {
+                             "total": 0,
+                         "correct": 0,
+                         "wrong": 0,
+                         "accuracy": 0
+                         },
+                     "config": config,
+                     "anistats": anistats,
+                     "list": list
+                     }
+                 json.dump(stuff, f)
+                 f.close
+    def grab_list(Username):
+        Url = "https://graphql.anilist.co"
+        query = '''
+        query($userName: String){
+            MediaListCollection(userName: $userName, type: ANIME,status: COMPLETED, sort: FINISHED_ON ){
+                user{
+                    statistics{
+                        anime{
+                        count
+                        meanScore
+                        standardDeviation
+                        }
                     }
                 }
-            }
-            lists{
-                entries{
-                    score
-                    media{
-                        title{
-                            english
-                        }
-                        tags{
-                        name
-                        rank
+                lists{
+                    entries{
+                        score
+                        media{
+                            title{
+                                english
+                            }
+                            tags{
+                            name
+                            rank
+                            }
                         }
                     }
                 }
             }
         }
-    }
+            '''
+        variables = {"userName": "coffeee"}
+        thingy = requests.post(Url, json ={"query": query, 'variables': variables})
+        blah = thingy.json()['data']['MediaListCollection']['lists']
+        #print(blah)
+        scoretobasedifficultyon = thingy.json()['data']['MediaListCollection']['user']['statistics']['anime']
+        #print(scoretobasedifficultyon)
+        return blah, scoretobasedifficultyon
+    def menu(load):
+        #doesnt actually do stuff, just makes sure on start 
+        display_page= f'''
+        welcome to my anime guessing game!
+        1: start thy game 
+        2. new user
+        3: user settings: {load}
+        4. game config settings
+        5: join_multiplayer room( never getting implanted lmao)
         '''
-    variables = {"userName": "coffeee"}
-    thingy = requests.post(Url, json ={"query": query, 'variables': variables})
-    blah = thingy.json()['data']['MediaListCollection']['lists']
-    #print(blah)
-    scoretobasedifficultyon = thingy.json()['data']['MediaListCollection']['user']['statistics']['anime']
-    #print(scoretobasedifficultyon)
-    return blah, scoretobasedifficultyon
-Username = "Coffeee"
-thing, avgscore = grab_list(Username)
-running = False
-#avgscore is purely the users average socore + count
-def start_game():
-    try:
-        thingymabobber = str(input)
-        if "ye" or "start" in thingymabobber:
-            running = True
-        elif "no" or "stop" in thingymabobber:
-            x = str(input("ok tbh you dont really have a choice and like this script isnt gonna get more games so see ya i guess maybe ill add a save option"))
-            running = False
-    except:
-        print("make sure to include something like yes or no lol start and stop also work and maybe stuff that starts with ye")
-animepool = []
-n=0
-upper_echoleon = avgscore['meanScore'] + avgscore['standardDeviation']
-lower_echoleon = avgscore['meanScore'] - avgscore['standardDeviation']
-upper_echoleon = upper_echoleon / 10
-lower_echoleon = lower_echoleon / 10
-lower_echoleon = round(lower_echoleon, 1)
-upper_echoleon = round(upper_echoleon, 1)
-n = 0
-def based_anime_count(avgscore):
-    if avgscore['count'] <= 200:
-        a = 37
-        b = 73
-        c = 100
-        return a, b, c
-    else:
-        a = avgscore['count'] * 0.33
-        a = round(a, 0)
-        b = avgscore['count'] * 0.66
-        b = round(b, 0)
-        c = avgscore['count']
-        return a, b, c
-easy, mid, hard = based_anime_count(avgscore)
-def easy_difficulty(easy, upper_echoleon, thing): 
-    animepool = []
-    n = 0
-    for i in thing:
-        if n<= easy:
-            animepool.append(i)
-            n+=1
-            continue
-        if i['score'] >= upper_echoleon:
-            animepool.append(i)
+        print(display_page)
+        if load== "no users":
+            x = input("no matter what you click your gonna be forced to create a new user lmao\n")
+            user.new()
+            menu()
+            print("you should probably config your settings")
         else:
-            break
-    return animepool
-def mid_difficulty(mid, upper_echoleon, lower_echoleon, thing): 
-    animepool = []
-    n = 0
-    for i in thing:
-        if n<= mid:
-            animepool.append(i)
-            n+=1
-            continue
-        if i['score'] <= upper_echoleon and i['score'] >= lower_echoleon:
-            animepool.append(i)
-        elif i['score'] <= lower_echoleon:
-            break
-    return animepool
-def hard_difficulty(hard, upper_echoleon, thing): 
-    animepool = []
-    n = 0
-    for i in thing:
-        if n<= hard:
-            animepool.append(i)
-            n+=1
-            continue
-        if i['score'] <= upper_echoleon:
-            animepool.append(i)
-    return animepool
-def game_difficulty():
-    try:
-        thing2 = str(input("What difficulty do you want? theres easy, medium, hard, and extreme: \n")).lower()
-        if thing2 == "easy":
-            animepool = easy_difficulty(easy, upper_echoleon, thing)
-        elif thing2 == "medium":
-            animepool = mid_difficulty(mid, upper_echoleon, lower_echoleon, thing)
-        elif thing2 == "hard":
-            animepool = hard_difficulty(hard, upper_echoleon, thing)
-        return animepool, thing2
-    except:
-        print("bruh thats not a difficulty or not in yet")
-#bruh that was only the logic to decide what animes would be condier? bruhh
-def getsananimetoguess(animepool, difficulty):
-    main_animepool = animepool[0]
-    main_animepool = main_animepool['entries']
-    number = len(main_animepool)
-    ranges = random.randint(0,number)
-    random_anime, tags =main_animepool[ranges], main_animepool[ranges]['media']['tags']
-    tagpool = []
-    if difficulty =="easy":
-        x= 80
-        amountoftags = 5
-    if difficulty == "medium":
-        x = 60
-        amountoftags = 4
-    if difficulty == "hard":
-        x = 70
-        amountoftags = 3
-        for i in tags:
-            if i['rank'] >= x:
-                continue
-            else:
-                tagpool.append(i)
-    if difficulty == "easy" or "medium": 
-        for i in tags:
-            tagpool.append(i)
-            if i['rank']<= x:
-                break
-    return random_anime, tagpool
-    
-
-    
-        
-        
-
-animepool, difficulty = game_difficulty()
-RA, TP = getsananimetoguess(animepool, difficulty)
-def actualgamenow(random_anime, tagpool):
-    x = len(tagpool)
-    tagsto_guess = []
-    while len(tagsto_guess) <= 4:
-        p = random.randint(0,x - 1)
-        if tagpool[p] in tagsto_guess:
-            continue
-        tagsto_guess.append(tagpool[p])
-
-    print('ok here are your tags that you can guess hehe lmao ')
-    for i in tagsto_guess:
-        print(i['name'])
-    def whaddeywant():
-        user_guessed = False
-        while user_guessed == False:
-            choice = str(input("just guess to guess, type hint to also reveal their ranks (reduced points)")).lower()
-            
-            class checkanswer:
-                #this sets the variables
-                def __init__(self, response, correct_answer):
-                    self.response = response
-                    self.correct_answer = correct_answer
-                    
-                    def check_answer():
-                        if self.response == self.correct_answer:
-                            choice = str(input("wow you got it right, what will you do now? type again to play again or type menu to go to the menu "))
-                            if choice == "menu":
-                                game_difficulty()
-                                #for now...
-                            elif choice == "again":
-                                game_difficulty()
-                                #for now...
-                        elif response == "hint":
-                            for i in tagpool:
-                                print(i)
-                            whaddeywant()
-                            #loop yet again that i havent coded RAAHHHHHHH
-                        elif len(response) == len(correct_answer) +2 or len(correct_answer) -2:
-                             print("so close! your 2 characters over or under!")
-                             whaddeywant()
-                             #maybe guess again? still gotta figure out loops lol
-                        else:
-                            choice = str(input("not it, try again or stop? (again or stop)"))
-                            if choice == "again":
-                                whaddeywant()
-                            elif choice == "stop":
-                                game_difficulty()
-                                #for now
-                            whaddeywant()
-                            #again, reinitiate the loop
-                    self.check = check_answer()
-            response = choice
-            correct_answer = random_anime['media']['title']
-            thestatement = checkanswer(response, correct_answer)
-            thestatement.check()
-    whaddeywant()
-            
-
-#wait ok so it first pulls your first _ anime (by date) then after it meets the echolon, it goes by difficulty.
-actualgamenow(RA, TP)
-    
+            try: 
+                y = int(input("your choice: "))
+            except:
+                print("choice 1-6 lmao")
+                menu()
+            if y ==1:
+                game()
+            elif y==2:
+                user.new()
+            elif y==3:
+                user.pick()
+            elif y==4:
+                name.config()
+            elif y==5:
+                RAAAAAAh         
+    def config():
+        with open(name, r) as file:
+            file.json.load
+            config = file['config']
+            file.close
+        print(f'''
+              [name]'s game config settings
+              configuress what you are given to guess based off of!
+              harder elements
+              1. tags = {config['tags']}
+              2. studio = {config['studio']}
+              3. director = {config['director']}
+              medium elements
+              4. genre = {config['tags']}
+              5. format = {config['format']}
+              6. season = {config['season']}
+              easy elements
+              7. year = {config['year']}
+              8. episode count = {config['episodes']}
+              9. rating = {config['rating']}
+                to format change: 1:true, 3:fale, 4:true...
+                type "back" to go mack to menu 
+              ''')
+        change = input("change: ").lower()
+        if change == "back":
+            return
+        else:
+            for i in change:
+                if i == int:
+                    n = i
+                if n == int:
+                    config[n] = i
+                    n = "hi"
+            menu()
+if __name__ == "__main__":
+    luck = user()

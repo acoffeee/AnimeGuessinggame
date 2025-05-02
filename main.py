@@ -193,7 +193,6 @@ class user:
                     elif y==5:
                         #place
                         pass         
-            self.currentUser = load()
             x = True
             while x == True:
                 try: 
@@ -211,44 +210,6 @@ class user:
                 correct +=1
                 total_guesses += guesses
                 wrong -= guesses - 1
-         
-            def grab_list(Username):
-                Url = "https://graphql.anilist.co"
-                query = '''
-                query($userName: String){
-                    MediaListCollection(userName: $userName, type: ANIME,status: COMPLETED, sort: FINISHED_ON ){
-                        user{
-                            statistics{
-                                anime{
-                                count
-                                meanScore
-                                standardDeviation
-                                }
-                            }
-                        }
-                        lists{
-                            entries{
-                                score
-                                media{
-                                    title{
-                                        english
-                                    }
-                                    tags{
-                                    name
-                                    rank
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-                    '''
-                variables = {"userName": "coffeee"}
-                thingy = requests.post(Url, json ={"query": query, 'variables': variables})
-                blah = thingy.json()['data']['MediaListCollection']['lists']
-                #print(blah)
-                scoretobasedifficultyon = thingy.json()['data']['MediaListCollection']['user']['statistics']['anime']
-                #print(scoretobasedifficultyon)
-                return blah, scoretobasedifficultyon
+
 if __name__== "__main__":
     ok = user()

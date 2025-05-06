@@ -2,7 +2,6 @@ import requests
 import random
 import os
 import json
-
 class user:
         def __init__(self):
             def grab_list(Username):
@@ -20,6 +19,7 @@ class user:
                             }
                         }
                         lists{
+                        name
                             entries{
                                 score
                                 media{
@@ -237,8 +237,7 @@ easy elements
                         print("choice 1-6 lmao")
                         menu()
                     if y ==1:
-                        #place
-                        pass
+                        return
                     elif y==2:
                         new()
                     elif y==3:
@@ -260,12 +259,29 @@ easy elements
                 except: 
                     self.currentUser=load()
                     menu()
-class game:
-    def __init__(self):
-        self.guesses = 0
-        self.correct = 0
-        def new_question():
-            return
+
+
+def get_animepool(player_list):
+    animepool = []
+    player_list= player_list['entries']
+    total = len(player_list)
+    while len(animepool) < 5:
+        anime_number = random.randint(0,total)
+        if anime_number in animepool:
+            continue
+        else:
+            animepool.append(player_list[anime_number])
+    return animepool
+def question(current_anime):
+    current_question = enumerate(current_anime)
+    for index, key in current_anime:
+        print(f'{index}: {key}')
+    #question_number+=1
+    return
+
+
+
+
 
 
 
@@ -273,5 +289,9 @@ def __main__():
     running = True
     while running == True:
         player = user()
+        animepool = get_animepool(player.list[0])
+        print(len(animepool))
+        for i in animepool:
+            question(i)
 if __name__== "__main__":
     __main__()

@@ -30,6 +30,30 @@ class user:
                                     name
                                     rank
                                     }
+                                    format
+                                    season
+                                    seasonYear
+                                    episodes
+                                    genres
+                                    averageScore
+                                    studios{
+                                        edges{
+                                            isMain
+                                            node{
+                                                name
+                                            }
+                                        }
+                                    }
+                                    staff{
+                                        edges{
+                                        role
+                                            node{
+                                                name{
+                                                    full
+                                                }
+                                            }
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -38,18 +62,19 @@ class user:
                     '''
                 variables = {"userName": "coffeee"}
                 thingy = requests.post(Url, json ={"query": query, 'variables': variables})
-                blah = thingy.json()['data']['MediaListCollection']['lists']
-                #print(blah)
-                scoretobasedifficultyon = thingy.json()['data']['MediaListCollection']['user']['statistics']['anime']
+                user_list = thingy.json()['data']['MediaListCollection']['lists']
+                print(user_list)
+                anistats = thingy.json()['data']['MediaListCollection']['user']['statistics']['anime']
                 #print(scoretobasedifficultyon)
-                return blah, scoretobasedifficultyon
+                return user_list, anistats
+
                
             def load():
                 try:
                     file = 'users.json'
                     with open(file, 'r') as f:
-                        global people
                         bwah = json.load(f)
+                        global people
                         amount = len(bwah['users'])
                         people = bwah['users']
                         f.close
@@ -61,31 +86,61 @@ class user:
                         f.close
                         return "no users"   
             def config():
+                print(self.name)
                 try:
                     with open(self.name, 'r') as r:
                         file = json.load(r)
-                        config = file['config']
+                        config = file["config"]
                     print(f'''
-                          {self.name}'s game config settings
-                          configuress what you are given to guess based off of!
-                          harder elements
-                          1. tags = {config['tags']}
-                          2. studio = {config['studio']}
-                          3. director = {config['director']}
-                          medium elements
-                          4. genre = {config['tags']}
-                          5. format = {config['format']}
-                          6. season = {config['season']}
-                          easy elements
-                          7. year = {config['year']}
-                          8. episode count = {config['episodes']}
-                          9. rating = {config['rating']}
-                            to format change: 1:true, 3:fale, 4:true...
-                            type "back" to go mack to menu 
-                          ''')
-                    change = input("change: ").lower()
-                    if change == "back":
-                        return
+{self.name}'s game config settings
+configuress what you are given to guess based off of!
+harder elements
+1. tags = {config['tags']}
+2. studio = {config['studio']}
+3. director = {config['director']}
+medium elements
+4. genre = {config['genre']}
+5. format = {config['format']}
+6. season = {config['season']}
+easy elements
+7. year = {config['year']}
+8. episode count = {config['episode']}
+9. rating = {config['rating']}
+  type "back" to go mack to menu 
+                        ''')                    
+                    try:
+                        choice = int(input("# of option: "))
+                        change = str(input("T or F only: ")).lower()
+                        if change == 't':
+                            change = 'True'
+                        elif change =='f':
+                            change = 'False'
+                        
+                        elif change == back:
+                            return
+                        n=0
+                        for i in config:
+                            n+=1
+                            if n == choice:
+                                config[i] = change
+                            else:
+                                continue
+                        file['config'] = config
+                        with open(self.name, 'w') as f:
+                            json.dump(file, f)
+                        try:
+                            again = int(input("1. configure something else? \n2.leave?"))
+                            if again == 1:
+                                config()
+                            elif again ==2:
+                                menu()
+                        except:
+                            print("ok to menu you go since you didnt type 1 or 2")
+                            return
+                        
+                    except:
+                        print("please type an int and t,f, or back")
+                        config()
                     else:
                         for i in change:
                             if i == int:
@@ -102,7 +157,7 @@ class user:
                  list = str(input("anilist user: "))
                  list, anistats = grab_list(list)
                  config = {
-                             "tags": True,
+                         "tags": True,
                          "studio": False,
                          "director": False,
                          "genre": True,
@@ -126,11 +181,11 @@ class user:
                  with open(name, 'w') as f:
                      stuff = {
                              "name": name,
-                         "guesses": {
+                             "guesses": {
                                  "total": 0,
-                             "correct": 0,
-                             "wrong": 0,
-                             "accuracy": 0
+                                 "correct": 0,
+                                 "wrong": 0,
+                                 "accuracy": 0
                              },
                          "config": config,
                          "anistats": anistats,
@@ -205,11 +260,18 @@ class user:
                 except: 
                     self.currentUser=load()
                     menu()
-            
-            def update(guesses):
-                correct +=1
-                total_guesses += guesses
-                wrong -= guesses - 1
+class game:
+    def __init__(self):
+        self.guesses = 0
+        self.correct = 0
+        def new_question():
+            return
 
+
+
+def __main__():
+    running = True
+    while running == True:
+        player = user()
 if __name__== "__main__":
-    ok = user()
+    __main__()

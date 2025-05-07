@@ -216,6 +216,22 @@ easy elements
                     return
                 except:
                     print("not a dude bruhh")
+            def save():
+                person = self.name
+                with open(person, 'w') as file:
+                    gather = {
+                             "name": self.name,
+                             "guesses": {
+                                 "total": self.t_guesses,
+                                 "correct": self.c_guesses,
+                                 "wrong": self.w_guesses,
+                                 "accuracy": self.t_guesses / self.w_guesses
+                             },
+                         "config": self.config,
+                         "anistats": self.anistats,
+                         "list": self.list
+                         }
+                    json.dump(gather, file, index=2)
             def menu():
                 display_page = f'''
                 welcome to my anime guessing game!
@@ -288,9 +304,12 @@ def question(current_anime, config):
             Anime_blanked += "_"
     print(Anime_blanked)
     guess = "idk"
+    guesses = 0
     while guess != anime_name:
+        guesses += 1
         guess = input("guess?: ").lower()
         if guess == anime_name:
+            return guesses
             continue
         else:
             print('try again')
@@ -311,7 +330,12 @@ def __main__():
         player = user()
         animepool = get_animepool(player.list[0])
         print(len(animepool))
+        score = 0
         for anime in animepool:
-            question(anime, player.config)
+            score = question(anime, player.config)
+            player.t_guesses +=score
+            player.w_guesses += score - 1
+            player.c_guesses += 1
+            player.save()
 if __name__== "__main__":
     __main__()

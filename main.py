@@ -112,9 +112,9 @@ easy elements
                         choice = int(input("# of option: "))
                         change = str(input("T or F only: ")).lower()
                         if change == 't':
-                            change = 'True'
+                            change = True
                         elif change =='f':
-                            change = 'False'
+                            change = False
                         
                         elif change == back:
                             return
@@ -273,10 +273,25 @@ def get_animepool(player_list):
             animepool.append(player_list[anime_number])
     return animepool
 def question(current_anime, config):
-    #print(config)
     for setting in config:
         if config[setting] == True:
-            print(current_anime['media'][setting])
+            try:
+                print(f'{setting}: {current_anime['media'][setting]}')
+            except:
+                print(f'{setting}: {current_anime[setting]}')
+        Anime_blanked = ""
+        for i in current_anime['media']['title']:
+            if i = " ":
+                Anime_blanked.join(i)
+            else:
+                Anime_blanked.join("_")
+        print(Anime_blanked)
+        while guess != current_anime['media']['title'].lower():
+            guess = input("guess?: ").lower()
+            if guess == current_anime['media']['title'].lower():
+                continue
+            else:
+                print('try again')
         
     #question_number+=1
     return

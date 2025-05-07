@@ -279,19 +279,22 @@ def question(current_anime, config):
                 print(f'{setting}: {current_anime['media'][setting]}')
             except:
                 print(f'{setting}: {current_anime[setting]}')
-        Anime_blanked = ""
-        for i in current_anime['media']['title']:
-            if i = " ":
-                Anime_blanked.join(i)
-            else:
-                Anime_blanked.join("_")
-        print(Anime_blanked)
-        while guess != current_anime['media']['title'].lower():
-            guess = input("guess?: ").lower()
-            if guess == current_anime['media']['title'].lower():
-                continue
-            else:
-                print('try again')
+    Anime_blanked = ""
+    anime_name = current_anime['media']['title']['english'].lower()
+    for i in anime_name:
+        if i == " ":
+            Anime_blanked += i
+        else:
+            Anime_blanked += "_"
+    print(Anime_blanked)
+    guess = "idk"
+    while guess != anime_name:
+        guess = input("guess?: ").lower()
+        if guess == anime_name:
+            continue
+        else:
+            print('try again')
+    print("you got it!")
         
     #question_number+=1
     return

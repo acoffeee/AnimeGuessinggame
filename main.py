@@ -96,16 +96,16 @@ class user:
 configuress what you are given to guess based off of!
 harder elements
 1. tags = {config['tags']}
-2. studio = {config['studio']}
-3. director = {config['director']}
+2. studio = {config['studios']}
+3. staff = {config['staff']}
 medium elements
-4. genre = {config['genre']}
+4. genre = {config['genres']}
 5. format = {config['format']}
 6. season = {config['season']}
 easy elements
-7. year = {config['year']}
-8. episode count = {config['episode']}
-9. rating = {config['rating']}
+7. year = {config['seasonYear']}
+8. episode count = {config['episodes']}
+9. rating on anilist = {config['averageScore']}
   type "back" to go mack to menu 
                         ''')                    
                     try:
@@ -158,14 +158,14 @@ easy elements
                  list, anistats = grab_list(list)
                  config = {
                          "tags": True,
-                         "studio": False,
-                         "director": False,
-                         "genre": True,
+                         "studios": False,
+                         "staff": False,
+                         "genres": True,
                          "format": True,
                          "season": False,
-                         "year": True,
-                         "episode": True,
-                         "rating": False,
+                         "seasonYear": True,
+                         "episodes": True,
+                         "averageScore": False,
                         }
                  file = 'users.json'
                  with open(file, 'r') as r:
@@ -272,10 +272,12 @@ def get_animepool(player_list):
         else:
             animepool.append(player_list[anime_number])
     return animepool
-def question(current_anime):
-    current_question = enumerate(current_anime)
-    for index, key in current_anime:
-        print(f'{index}: {key}')
+def question(current_anime, config):
+    #print(config)
+    for setting in config:
+        if config[setting] == True:
+            print(current_anime['media'][setting])
+        
     #question_number+=1
     return
 
@@ -291,7 +293,7 @@ def __main__():
         player = user()
         animepool = get_animepool(player.list[0])
         print(len(animepool))
-        for i in animepool:
-            question(i)
+        for anime in animepool:
+            question(anime, player.config)
 if __name__== "__main__":
     __main__()

@@ -292,7 +292,17 @@ def question(current_anime, config):
     for setting in config:
         if config[setting] == True:
             try:
-                print(f'{setting}: {current_anime['media'][setting]}')
+                if setting == 'tags':
+                    for tag in current_anime['media']['tags']:
+                        if tag['rank'] >= 80:
+                            print(f'{tag['name']}: {tag['rank']}%')
+                        else:
+                            break
+                elif setting == 'studios':
+                    for studio in current_anime['media']['studios']['edges']:
+                        return
+                else:
+                    print(f'{setting}: {current_anime['media'][setting]}')
             except:
                 print(f'{setting}: {current_anime[setting]}')
     Anime_blanked = ""

@@ -116,7 +116,7 @@ easy elements
                         elif change =='f':
                             change = False
                         
-                        elif change == back:
+                        elif change == 'back':
                             return
                         n=0
                         for i in config:
@@ -152,46 +152,46 @@ easy elements
                     print("come back when youve loaded a user")
                     return
             def new():
-                 name = str(input("name: "))
-                 name= name
-                 list = str(input("anilist user: "))
-                 list, anistats = grab_list(list)
-                 config = {
-                         "tags": True,
-                         "studios": False,
-                         "staff": False,
-                         "genres": True,
-                         "format": True,
-                         "season": False,
-                         "seasonYear": True,
-                         "episodes": True,
-                         "averageScore": False,
+                name = str(input("name: "))
+                name= name
+                list = str(input("anilist user: "))
+                list, anistats = grab_list(list)
+                config = {
+                        "tags": True,
+                        "studios": False,
+                        "staff": False,
+                        "genres": True,
+                        "format": True,
+                        "season": False,
+                        "seasonYear": True,
+                        "episodes": True,
+                        "averageScore": False,
+                       }
+                file = 'users.json'
+                with open(file, 'r') as r:
+                    stuff = json.load(r)
+                    inlist = stuff['users']
+                    r.close
+                inlist.append(name)
+                print(inlist)
+                with open(file, 'w') as f:
+                    stuff = {"users": inlist}
+                    json.dump(stuff, f)
+                    f.close
+                with open(name, 'w') as f:
+                    stuff = {
+                            "name": name,
+                            "guesses": {
+                                "total": 0,
+                                "correct": 0,
+                                "wrong": 0,
+                                "accuracy": 0
+                            },
+                        "config": config,
+                        "anistats": anistats,
+                        "list": list
                         }
-                 file = 'users.json'
-                 with open(file, 'r') as r:
-                     stuff = json.load(r)
-                     inlist = stuff['users']
-                     r.close
-                 inlist.append(name)
-                 print(inlist)
-                 with open(file, 'w') as f:
-                     stuff = {"users": inlist}
-                     json.dump(stuff, f)
-                     f.close
-                 with open(name, 'w') as f:
-                     stuff = {
-                             "name": name,
-                             "guesses": {
-                                 "total": 0,
-                                 "correct": 0,
-                                 "wrong": 0,
-                                 "accuracy": 0
-                             },
-                         "config": config,
-                         "anistats": anistats,
-                         "list": list
-                         }
-                     json.dump(stuff, f)
+                    json.dump(stuff, f)
             def pick():
                 try:
                     n=1
@@ -202,7 +202,6 @@ easy elements
                     thing = str(people[choice - 1])
                     with open(thing, 'r') as f:
                         ui = json.load(f)
-                        f.close
                     self.name = ui['name']
                     self.t_guesses =ui['guesses']['total']
                     self.w_guesses = ui['guesses']['wrong']
@@ -211,27 +210,26 @@ easy elements
                     self.anistats = ui['anistats']
                     self.config = ui['config']
                     self.currentUser = ui['name']
-                    self.choose_user=True
+                    self.choose_user= True
                     load()
                     return
                 except:
                     print("not a dude bruhh")
             def save():
-                person = self.name
-                with open(person, 'w') as file:
-                    gather = {
-                             "name": self.name,
-                             "guesses": {
-                                 "total": self.t_guesses,
-                                 "correct": self.c_guesses,
-                                 "wrong": self.w_guesses,
-                                 "accuracy": self.t_guesses / self.w_guesses
+                    with open(self.name, 'w') as file:
+                        gather = {
+                                "guesses": {
+                                "total": self.t_guesses,
+                                "correct": self.c_guesses,
+                                "wrong": self.w_guesses,
+                                "accuracy": self.t_guesses / self.w_guesses
                              },
                          "config": self.config,
                          "anistats": self.anistats,
                          "list": self.list
                          }
-                    json.dump(gather, file, index=2)
+                        json.dump(gather, file, index=2)
+                    return
             def menu():
                 display_page = f'''
                 welcome to my anime guessing game!
@@ -300,7 +298,7 @@ def question(current_anime, config):
                             break
                 elif setting == 'studios':
                     for studio in current_anime['media']['studios']['edges']:
-                        return
+                        print(studio)
                 else:
                     print(f'{setting}: {current_anime['media'][setting]}')
             except:
@@ -313,6 +311,7 @@ def question(current_anime, config):
         else:
             Anime_blanked += "_"
     print(Anime_blanked)
+    print(current_anime['media']['title']['english'])
     guess = "idk"
     guesses = 0
     while guess != anime_name:
